@@ -35,14 +35,18 @@ Atualmente atuo como Desenvolvedor Drupal e Gestor de Projetos na Pictonio e com
 ### 📊 Atividades e Estatísticas
 
 <div align="center">
-  <img src="https://github-trophies.vercel.app/?username=[preencher]&theme=tokyonight" alt="Troféus GitHub" />
+  <img src="https://github-trophies.vercel.app/?username=PedroMira2&theme=tokyonight" alt="Troféus GitHub" />
   <br/><br/>
-  <img src="https://github-stats-extended.vercel.app/api?username=[preencher]&theme=tokyonight&show_icons=true" alt="Estatísticas do GitHub" />
-  <img src="https://streak-stats.demolab.com/?user=[preencher]&theme=tokyonight" alt="Sequência de Commits" />
+  <img src="https://github-stats-extended.vercel.app/api?username=PedroMira2&theme=tokyonight&show_icons=true" alt="Estatísticas do GitHub" />
+  <img src="https://streak-stats.demolab.com/?user=PedroMira2&theme=tokyonight" alt="Sequência de Commits" />
   <br/><br/>
-  <img src="https://ghchart.rshah.org/7aa2f7/[preencher]" alt="Gráfico de Contribuição" />
+  <img src="https://ghchart.rshah.org/7aa2f7/PedroMira2" alt="Gráfico de Contribuição" />
   <br/><br/>
-  [[cobra aqui]]
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/PedroMira2/PedroMira2/output/github-contribution-grid-snake-dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/PedroMira2/PedroMira2/output/github-contribution-grid-snake.svg">
+    <img alt="Snake animation" src="https://raw.githubusercontent.com/PedroMira2/PedroMira2/output/github-contribution-grid-snake.svg" />
+  </picture>
 </div>
 
 ---

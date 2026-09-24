@@ -9,4 +9,5 @@ __pycache__/
 
 # Logs e arquivos temporarios
 *.log
+*.exe
 scratch/

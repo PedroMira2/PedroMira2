@@ -1,6 +1,7 @@
 # Credenciais e variaveis de ambiente
 .env
 *.env.local
+config.json
 
 # Python
 __pycache__/

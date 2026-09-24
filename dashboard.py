@@ -16,14 +16,67 @@ if sys.stdout and hasattr(sys.stdout, 'reconfigure'):
 if sys.stderr and hasattr(sys.stderr, 'reconfigure'):
     sys.stderr.reconfigure(encoding='utf-8', errors='replace')
 
-# Diretórios base
-REPO_DIR = os.path.dirname(os.path.abspath(__file__))
+# Detecção robusta do diretório real da aplicação (compatível com PyInstaller .exe)
+if getattr(sys, 'frozen', False):
+    REPO_DIR = os.path.dirname(os.path.abspath(sys.executable))
+else:
+    REPO_DIR = os.path.dirname(os.path.abspath(__file__))
+
 DOCS_DIR = os.path.join(REPO_DIR, "docs")
 KB_DIR = os.path.join(DOCS_DIR, "knowledge-base")
 LOG_FILE = os.path.join(DOCS_DIR, "activity-log.md")
 ENV_FILE = os.path.join(REPO_DIR, ".env")
+CONFIG_FILE = os.path.join(REPO_DIR, "config.json")
 
 PORT = 5050
+
+DEFAULT_CONFIG = {
+    "api_key": "",
+    "model": "gemini-3.5-flash-lite",
+    "start_hour": 9,
+    "end_hour": 22,
+    "min_interval": 75,
+    "max_interval": 210,
+    "git_branch": "main"
+}
+
+def load_config():
+    cfg = DEFAULT_CONFIG.copy()
+    if os.path.exists(CONFIG_FILE):
+        try:
+            with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+                cfg.update(json.load(f))
+        except Exception:
+            pass
+    if os.path.exists(ENV_FILE):
+        try:
+            with open(ENV_FILE, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if line.startswith("GEMINI_API_KEY="):
+                        val = line.split("=", 1)[1].strip().strip('"').strip("'")
+                        if val:
+                            cfg["api_key"] = val
+        except Exception:
+            pass
+    return cfg
+
+def save_config(new_cfg):
+    cfg = load_config()
+    cfg.update(new_cfg)
+    try:
+        with open(CONFIG_FILE, "w", encoding="utf-8") as f:
+            json.dump(cfg, f, indent=2, ensure_ascii=False)
+    except Exception as e:
+        add_log("ERRO", f"Erro ao salvar config.json: {e}")
+
+    if "api_key" in new_cfg and new_cfg["api_key"]:
+        try:
+            with open(ENV_FILE, "w", encoding="utf-8") as f:
+                f.write(f"GEMINI_API_KEY={new_cfg['api_key'].strip()}\n")
+        except Exception as e:
+            add_log("ERRO", f"Erro ao salvar .env: {e}")
+    return cfg
 
 # Estado global da automação
 STATE = {
@@ -45,20 +98,9 @@ def add_log(tag, message):
     timestamp = datetime.datetime.now().strftime("%H:%M:%S")
     entry = {"time": timestamp, "tag": tag, "message": message}
     STATE["logs"].append(entry)
-    if len(STATE["logs"]) > 100:
+    if len(STATE["logs"]) > 120:
         STATE["logs"].pop(0)
     print(f"[{timestamp}] [{tag}] {message}")
-
-def load_api_key():
-    if os.path.exists(ENV_FILE):
-        with open(ENV_FILE, "r", encoding="utf-8") as f:
-            for line in f:
-                line = line.strip()
-                if line.startswith("GEMINI_API_KEY="):
-                    val = line.split("=", 1)[1].strip().strip('"').strip("'")
-                    if val:
-                        return val
-    return os.environ.get("GEMINI_API_KEY", "")
 
 DOMAINS = [
     "AppSec & OWASP Top 10 (SQLi, XSS, SSRF, CSRF, IDOR, Broken Authentication, Deserialização Insegura)",
@@ -87,9 +129,10 @@ FALLBACK_TEMPLATES = [
 ]
 
 def generate_with_gemini():
-    api_key = load_api_key()
+    cfg = load_config()
+    api_key = cfg.get("api_key", "").strip()
     if not api_key:
-        add_log("ERRO", "Chave GEMINI_API_KEY não configurada no arquivo .env.")
+        add_log("ERRO", "Chave da API do Gemini não configurada! Abra o menu de Configurações.")
         return random.choice(FALLBACK_TEMPLATES)
 
     domain = random.choice(DOMAINS)
@@ -108,7 +151,14 @@ Retorne ESTRITAMENTE um JSON com as seguintes chaves:
   "content": "Texto técnico explicativo completo (2 a 3 parágrafos densos e aprofundados) acompanhado de um bloco de código prático em Python, Bash ou configuração Nginx/Apache demonstrando a aplicação do conceito."
 }}
 """
-    for model in ["gemini-3.5-flash-lite", "gemini-3.1-flash-lite"]:
+    selected_model = cfg.get("model", "gemini-3.5-flash-lite")
+    models_to_try = [selected_model]
+    if "gemini-3.5-flash-lite" not in models_to_try:
+        models_to_try.append("gemini-3.5-flash-lite")
+    if "gemini-3.1-flash-lite" not in models_to_try:
+        models_to_try.append("gemini-3.1-flash-lite")
+
+    for model in models_to_try:
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
         payload = {
             "contents": [{"parts": [{"text": prompt}]}],
@@ -188,14 +238,19 @@ def execute_commit_cycle(is_manual=False):
     except subprocess.CalledProcessError as e:
         err = e.stderr.decode(errors='ignore') if e.stderr else str(e)
         STATE["status_message"] = "⚠️ Erro ao enviar para o GitHub"
-        add_log("ERRO", f"Falha no Git: {err.strip()[:100]}")
+        add_log("ERRO", f"Falha no Git: {err.strip()[:120]}")
         return False
 
 def background_scheduler():
     """Thread que gerencia os intervalos e horários humanos."""
-    add_log("SISTEMA", "Agendador inteligente iniciado.")
-    # Primeira execução agenda o próximo commit
-    delay = random.randint(75, 210)
+    add_log("SISTEMA", f"Repositório detectado: {REPO_DIR}")
+    cfg = load_config()
+    start_hour = cfg.get("start_hour", 9)
+    end_hour = cfg.get("end_hour", 22)
+    min_int = cfg.get("min_interval", 75)
+    max_int = cfg.get("max_interval", 210)
+
+    delay = random.randint(min_int, max_int)
     STATE["next_run_timestamp"] = time.time() + (delay * 60)
     add_log("AGENDADOR", f"Primeiro ciclo automático programado para daqui a {delay} minutos.")
 
@@ -206,19 +261,23 @@ def background_scheduler():
 
         now = datetime.datetime.now()
         current_hour = now.hour
+        cfg = load_config()
+        start_hour = cfg.get("start_hour", 9)
+        end_hour = cfg.get("end_hour", 22)
 
-        # Verifica se está no horário humano (09:00 às 22:30)
-        if 9 <= current_hour <= 22:
+        if start_hour <= current_hour <= end_hour:
             remaining = STATE["next_run_timestamp"] - time.time()
             if remaining <= 0:
                 execute_commit_cycle()
-                delay = random.randint(75, 210)
+                min_int = cfg.get("min_interval", 75)
+                max_int = cfg.get("max_interval", 210)
+                delay = random.randint(min_int, max_int)
                 STATE["next_run_timestamp"] = time.time() + (delay * 60)
                 add_log("AGENDADOR", f"Próxima atividade programada para daqui a {delay} minutos.")
             else:
                 STATE["status_message"] = f"🟢 Ativo & Monitorando (Próximo ciclo em {int(remaining//60)}m)"
         else:
-            STATE["status_message"] = "🌙 Repouso Noturno (Pausado até as 09:00 para simular rotina humana)"
+            STATE["status_message"] = f"🌙 Repouso Noturno (Pausado até as {start_hour:02d}:00)"
 
         time.sleep(1)
 
@@ -271,6 +330,7 @@ HTML_PAGE = """<!DOCTYPE html>
     }
     .brand h1 { font-size: 22px; font-weight: 700; color: #fff; }
     .brand p { font-size: 13px; color: var(--text-muted); }
+    .header-actions { display: flex; align-items: center; gap: 12px; }
     .status-badge {
       display: flex;
       align-items: center;
@@ -307,7 +367,6 @@ HTML_PAGE = """<!DOCTYPE html>
       border-radius: 16px;
       padding: 20px;
       position: relative;
-      overflow: hidden;
     }
     .card-title {
       font-size: 13px;
@@ -381,6 +440,86 @@ HTML_PAGE = """<!DOCTYPE html>
     .tag-SUCESSO { background: rgba(158, 206, 106, 0.2); color: var(--success); }
     .tag-ERRO { background: rgba(247, 118, 142, 0.2); color: var(--danger); }
     .tag-INFO, .tag-CICLO, .tag-SISTEMA, .tag-AGENDADOR { background: rgba(86, 95, 137, 0.2); color: var(--text); }
+
+    /* Modal de Configurações */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(15, 17, 26, 0.85);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: var(--card-bg);
+      border: 1px solid var(--primary);
+      border-radius: 18px;
+      width: 90%;
+      max-width: 600px;
+      padding: 28px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--card-border);
+    }
+    .modal-header h2 { font-size: 18px; color: #fff; display: flex; align-items: center; gap: 8px; }
+    .form-group { margin-bottom: 18px; }
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .form-group .desc { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
+    .input-wrapper { display: flex; gap: 8px; }
+    input[type="text"], input[type="password"], input[type="number"], select {
+      flex: 1;
+      background: var(--code-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: #fff;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      outline: none;
+    }
+    input:focus, select:focus { border-color: var(--primary); }
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 1px solid var(--card-border);
+    }
+    .test-result {
+      margin-top: 8px;
+      font-size: 12px;
+      display: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+    }
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--success);
+      color: #0f111a;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      display: none;
+      z-index: 2000;
+    }
   </style>
 </head>
 <body>
@@ -393,9 +532,14 @@ HTML_PAGE = """<!DOCTYPE html>
           <p>Automação Inteligente de Base Técnica & Contribuições &bull; <b>PedroMira2</b></p>
         </div>
       </div>
-      <div class="status-badge" id="badge-status">
-        <div class="status-dot" id="badge-dot"></div>
-        <span id="badge-text">Conectado & Ativo</span>
+      <div class="header-actions">
+        <button class="btn-secondary" onclick="openSettings()">
+          ⚙️ Configurações
+        </button>
+        <div class="status-badge" id="badge-status">
+          <div class="status-dot" id="badge-dot"></div>
+          <span id="badge-text">Conectado & Ativo</span>
+        </div>
       </div>
     </header>
 
@@ -408,7 +552,7 @@ HTML_PAGE = """<!DOCTYPE html>
       <div class="card">
         <div class="card-title">📊 Commits Hoje</div>
         <div class="card-value" id="commits-today">0</div>
-        <div class="card-sub">Horário Ativo: 09h às 22h30</div>
+        <div class="card-sub" id="sched-hours">Horário: 09h às 22h</div>
       </div>
       <div class="card">
         <div class="card-title">🤖 Inteligência Artificial</div>
@@ -445,8 +589,70 @@ HTML_PAGE = """<!DOCTYPE html>
     </div>
   </div>
 
+  <!-- Modal de Configurações -->
+  <div class="modal-overlay" id="modal-settings">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>⚙️ Configurações do Sistema</h2>
+        <button class="btn-secondary" style="padding: 6px 10px;" onclick="closeSettings()">✕</button>
+      </div>
+      <div class="form-group">
+        <label>Chave de API do Google Gemini</label>
+        <div class="desc">A sua chave de acesso à IA (armazenada de forma segura no arquivo local .env)</div>
+        <div class="input-wrapper">
+          <input type="password" id="cfg-api-key" placeholder="AQ.Ab... ou AIzaSy...">
+          <button class="btn-secondary" type="button" onclick="toggleKeyVisibility()">👁️</button>
+          <button class="btn-secondary" type="button" onclick="testApiKey()" id="btn-test-key">🧪 Testar</button>
+        </div>
+        <div class="test-result" id="test-key-result"></div>
+      </div>
+      <div class="form-group">
+        <label>Modelo de Inteligência Artificial</label>
+        <select id="cfg-model">
+          <option value="gemini-3.5-flash-lite">gemini-3.5-flash-lite (Recomendado - Mais rápido e preciso)</option>
+          <option value="gemini-3.1-flash-lite">gemini-3.1-flash-lite (Reserva de alta velocidade)</option>
+          <option value="gemini-flash-latest">gemini-flash-latest</option>
+        </select>
+      </div>
+      <div style="display: flex; gap: 16px;">
+        <div class="form-group" style="flex: 1;">
+          <label>Horário de Início (Hora)</label>
+          <input type="number" id="cfg-start-hour" min="0" max="23" value="9">
+        </div>
+        <div class="form-group" style="flex: 1;">
+          <label>Horário de Término (Hora)</label>
+          <input type="number" id="cfg-end-hour" min="0" max="23" value="22">
+        </div>
+      </div>
+      <div style="display: flex; gap: 16px;">
+        <div class="form-group" style="flex: 1;">
+          <label>Intervalo Mínimo (Minutos)</label>
+          <input type="number" id="cfg-min-interval" min="10" max="300" value="75">
+        </div>
+        <div class="form-group" style="flex: 1;">
+          <label>Intervalo Máximo (Minutos)</label>
+          <input type="number" id="cfg-max-interval" min="20" max="600" value="210">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeSettings()">Cancelar</button>
+        <button onclick="saveSettings()">💾 Salvar Configurações</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Configurações salvas com sucesso!</div>
+
   <script>
     let isPaused = false;
+
+    function showToast(msg, bg) {
+      const t = document.getElementById('toast');
+      t.innerText = msg;
+      if (bg) t.style.background = bg;
+      t.style.display = 'block';
+      setTimeout(() => t.style.display = 'none', 3000);
+    }
 
     async function updateStatus() {
       try {
@@ -476,6 +682,7 @@ HTML_PAGE = """<!DOCTYPE html>
         document.getElementById('last-commit-sha').innerText = data.last_commit_sha;
         document.getElementById('last-commit-msg').innerText = data.last_commit_msg;
         document.getElementById('status-desc').innerText = data.status_message;
+        document.getElementById('active-model').innerText = data.active_model.replace('gemini-', '');
 
         // Countdown
         if (data.next_run_timestamp > 0) {
@@ -513,6 +720,7 @@ HTML_PAGE = """<!DOCTYPE html>
       btn.innerHTML = '⏳ Gerando com Gemini...';
       try {
         await fetch('/api/trigger', { method: 'POST' });
+        showToast("Ciclo iniciado! Acompanhe no console.");
       } catch (err) {
         alert("Erro ao disparar commit.");
       }
@@ -530,6 +738,95 @@ HTML_PAGE = """<!DOCTYPE html>
 
     function openGitHub() {
       window.open('https://github.com/PedroMira2', '_blank');
+    }
+
+    async function openSettings() {
+      try {
+        const res = await fetch('/api/config');
+        const data = await res.json();
+        document.getElementById('cfg-api-key').value = data.api_key || '';
+        document.getElementById('cfg-model').value = data.model || 'gemini-3.5-flash-lite';
+        document.getElementById('cfg-start-hour').value = data.start_hour !== undefined ? data.start_hour : 9;
+        document.getElementById('cfg-end-hour').value = data.end_hour !== undefined ? data.end_hour : 22;
+        document.getElementById('cfg-min-interval').value = data.min_interval || 75;
+        document.getElementById('cfg-max-interval').value = data.max_interval || 210;
+        document.getElementById('test-key-result').style.display = 'none';
+        document.getElementById('modal-settings').style.display = 'flex';
+      } catch (e) {
+        alert("Erro ao carregar configurações: " + e);
+      }
+    }
+
+    function closeSettings() {
+      document.getElementById('modal-settings').style.display = 'none';
+    }
+
+    function toggleKeyVisibility() {
+      const input = document.getElementById('cfg-api-key');
+      input.type = input.type === 'password' ? 'text' : 'password';
+    }
+
+    async function testApiKey() {
+      const key = document.getElementById('cfg-api-key').value.trim();
+      const model = document.getElementById('cfg-model').value;
+      const resEl = document.getElementById('test-key-result');
+      const btn = document.getElementById('btn-test-key');
+      btn.disabled = true;
+      btn.innerText = 'Testando...';
+      resEl.style.display = 'block';
+      resEl.innerText = 'Conectando ao Google Gemini...';
+      resEl.style.background = 'rgba(122, 162, 247, 0.15)';
+      resEl.style.color = 'var(--primary)';
+
+      try {
+        const res = await fetch('/api/test-key', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: json_stringify = JSON.stringify({ api_key: key, model: model })
+        });
+        const result = await res.json();
+        if (result.success) {
+          resEl.style.background = 'rgba(158, 206, 106, 0.2)';
+          resEl.style.color = 'var(--success)';
+          resEl.innerText = '✅ ' + result.message;
+        } else {
+          resEl.style.background = 'rgba(247, 118, 142, 0.2)';
+          resEl.style.color = 'var(--danger)';
+          resEl.innerText = '❌ ' + result.message;
+        }
+      } catch (err) {
+        resEl.style.background = 'rgba(247, 118, 142, 0.2)';
+        resEl.style.color = 'var(--danger)';
+        resEl.innerText = '❌ Erro de comunicação: ' + err;
+      }
+      btn.disabled = false;
+      btn.innerText = '🧪 Testar';
+    }
+
+    async function saveSettings() {
+      const cfg = {
+        api_key: document.getElementById('cfg-api-key').value.trim(),
+        model: document.getElementById('cfg-model').value,
+        start_hour: parseInt(document.getElementById('cfg-start-hour').value) || 9,
+        end_hour: parseInt(document.getElementById('cfg-end-hour').value) || 22,
+        min_interval: parseInt(document.getElementById('cfg-min-interval').value) || 75,
+        max_interval: parseInt(document.getElementById('cfg-max-interval').value) || 210,
+      };
+
+      try {
+        const res = await fetch('/api/config', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(cfg)
+        });
+        const data = await res.json();
+        closeSettings();
+        showToast("Configurações salvas com sucesso!");
+        document.getElementById('sched-hours').innerText = `Horário: ${cfg.start_hour}h às ${cfg.end_hour}h`;
+        updateStatus();
+      } catch (e) {
+        alert("Erro ao salvar: " + e);
+      }
     }
 
     setInterval(updateStatus, 2000);
@@ -551,11 +848,20 @@ class DashboardHandler(BaseHTTPRequestHandler):
             self.send_header("Content-Type", "application/json; charset=utf-8")
             self.end_headers()
             self.wfile.write(json.dumps(STATE).encode("utf-8"))
+        elif self.path == "/api/config":
+            cfg = load_config()
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.end_headers()
+            self.wfile.write(json.dumps(cfg).encode("utf-8"))
         else:
             self.send_response(404)
             self.end_headers()
 
     def do_POST(self):
+        content_len = int(self.headers.get('Content-Length', 0))
+        body = self.rfile.read(content_len).decode('utf-8') if content_len > 0 else ""
+        
         if self.path == "/api/trigger":
             threading.Thread(target=execute_commit_cycle, kwargs={"is_manual": True}).start()
             self.send_response(200)
@@ -569,29 +875,62 @@ class DashboardHandler(BaseHTTPRequestHandler):
             self.send_header("Content-Type", "application/json")
             self.end_headers()
             self.wfile.write(json.dumps({"is_paused": STATE["is_paused"]}).encode())
+        elif self.path == "/api/config":
+            try:
+                new_data = json.loads(body)
+                updated = save_config(new_data)
+                add_log("CONFIG", "Configurações atualizadas com sucesso pelo usuário.")
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": True, "config": updated}).encode())
+            except Exception as e:
+                self.send_response(500)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": False, "error": str(e)}).encode())
+        elif self.path == "/api/test-key":
+            try:
+                req_data = json.loads(body) if body else {}
+                key = req_data.get("api_key") or load_config().get("api_key")
+                model = req_data.get("model") or "gemini-3.5-flash-lite"
+                url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={key}"
+                test_r = requests.post(
+                    url,
+                    json={"contents": [{"parts": [{"text": "Responda apenas: OK"}]}]},
+                    timeout=10
+                )
+                if test_r.status_code == 200:
+                    res_json = {"success": True, "message": f"Chave válida! Conectado com sucesso ao {model}."}
+                else:
+                    err_msg = test_r.json().get("error", {}).get("message", test_r.text)
+                    res_json = {"success": False, "message": f"Erro {test_r.status_code}: {err_msg[:120]}"}
+            except Exception as err:
+                res_json = {"success": False, "message": f"Erro de conexão: {str(err)[:120]}"}
+            
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            self.wfile.write(json.dumps(res_json).encode())
         else:
             self.send_response(404)
             self.end_headers()
 
     def log_message(self, format, *args):
-        # Silencia logs padrão do HTTP para manter o console limpo
         pass
 
 def run_server():
     server = HTTPServer(("127.0.0.1", PORT), DashboardHandler)
-    add_log("SISTEMA", f"Servidor Dashboard Web iniciado em http://127.0.0.1:{PORT}")
+    add_log("SISTEMA", f"Servidor Dashboard Web ativo em http://127.0.0.1:{PORT}")
     server.serve_forever()
 
 def main():
     add_log("SISTEMA", "Iniciando GitHub AI Activity Hub...")
-    # Inicia thread do agendador em segundo plano
     t_sched = threading.Thread(target=background_scheduler, daemon=True)
     t_sched.start()
 
-    # Abre o navegador automaticamente
     threading.Thread(target=lambda: (time.sleep(1.2), webbrowser.open(f"http://127.0.0.1:{PORT}")), daemon=True).start()
 
-    # Roda o servidor Web
     run_server()
 
 if __name__ == "__main__":

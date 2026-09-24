@@ -2,16 +2,16 @@
   <img src="https://capsule-render.vercel.app/api?type=waving&color=7aa2f7&height=120&section=header" width="100%" alt="Header Banner" />
   
   <h1>Pedro Mira</h1>
-  
+
   <a href="https://github.com/PedroMira2">
-    <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=22&pause=1000&color=7AA2F7&center=true&vCenter=true&width=620&lines=Desenvolvedor+Drupal+%26+Solu%C3%A7%C3%B5es+Web;Seguran%C3%A7a+Aplicacional+%26+Pentesting;T%C3%A9cnico+de+Sistemas+Inform%C3%A1ticos+(GPSI);Dispon%C3%ADvel+para+Novas+Oportunidades" alt="Especialidades - Typing SVG" />
+    <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=21&pause=1000&color=7AA2F7&center=true&vCenter=true&width=650&lines=Ciberseguran%C3%A7a+%26+Seguran%C3%A7a+Aplicacional+(AppSec);Testes+de+Penetra%C3%A7%C3%A3o+(Pentesting)+%26+OWASP;Administra%C3%A7%C3%A3o+de+Sistemas+Linux+%26+Redes;Automa%C3%A7%C3%A3o+de+Seguran%C3%A7a+com+Python+%26+Bash;Dispon%C3%ADvel+para+Novas+Oportunidades+Profissionais" alt="Especialidades - Typing SVG" />
   </a>
 
   <br/><br/>
 
   <p align="center">
     <a href="mailto:pedroh.novaesmira@hotmail.com">
-      <img src="https://img.shields.io/badge/Status-Dispon%C3%ADvel%20para%20Contrata%C3%A7%C3%A3o-2ea44f?style=for-the-badge&logo=github&logoColor=white" alt="Open to Work" />
+      <img src="https://img.shields.io/badge/Status-Dispon%C3%ADvel%20para%20Contrata%C3%A7%C3%A3o-2ea44f?style=for-the-badge&logo=github&logoColor=white" alt="Disponível para Contratação" />
     </a>
     &nbsp;
     <img src="https://img.shields.io/badge/Localiza%C3%A7%C3%A3o-Aveiro%2C%20Portugal-1a1b26?style=for-the-badge&logo=googlemaps&logoColor=7aa2f7" alt="Localização" />
@@ -19,45 +19,52 @@
     <a href="https://www.linkedin.com/in/pedronmira" target="_blank">
       <img src="https://img.shields.io/badge/LinkedIn-Conectar-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" />
     </a>
+    &nbsp;
+    <a href="https://me.pedronmira.pt/" target="_blank">
+      <img src="https://img.shields.io/badge/Portfolio-me.pedronmira.pt-7AA2F7?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Portfólio Online" />
+    </a>
   </p>
 </div>
 
 ---
 
-## 🎯 Perfil Profissional
+## 🎯 Perfil Profissional & Objetivo
 
-Profissional técnico formado em **Gestão e Programação de Sistemas Informáticos (GPSI)** pela Escola Profissional de Aveiro (distinguido como **Melhor Aluno da Escola**).
+> **"Segurança Ofensiva, Defesa Proativa."**
 
-Com experiência mais recente na **Pictonio** como **Desenvolvedor Drupal e Gestor de Projeto**, atuei na liderança do desenvolvimento de sistemas web personalizados e gestão estruturada de recursos. Paralelamente, atuei na área de **Cibersegurança e Pentesting** na **Pro Digital Key**, realizando testes de penetração em aplicações web (OWASP Top 10), auditoria de configurações e relatórios técnicos de remediação com **Kali Linux**, **Burp Suite** e **OWASP ZAP**.
+Profissional técnico com formação em **Gestão e Programação de Sistemas Informáticos (GPSI)** pela Escola Profissional de Aveiro, distinguido com o **Prêmio de Melhor Aluno da Escola**. 
 
-Atualmente estou **à procura de novos desafios e oportunidades de emprego**, focado em entregar soluções web seguras, robustas e de alto impacto.
+Possuo sólida experiência prática em **Cibersegurança**, com foco em **testes de penetração (pentesting)**, **segurança em aplicações web (AppSec / OWASP Top 10)**, análise e mitigação de vulnerabilidades com ferramentas como **Kali Linux**, **Burp Suite**, **OWASP ZAP**, **Metasploit** e **Nmap**.
+
+Tenho ainda histórico consistente em **administração de redes e servidores Linux (Ubuntu, CentOS)**, configuração de ambientes de hospedagem web (Apache, Nginx, LAMP) e desenvolvimento de **scripts de automação de testes de segurança com Python e Bash**. Na minha trajetória mais recente, atuei na **Pictonio** em infraestrutura web e gestão técnica de sistemas, e na **Pro Digital Key** na execução de pentests, auditorias de segurança e relatórios técnicos de remediação.
+
+Atualmente estou **em busca ativa de novas oportunidades profissionais** nas áreas de **Cibersegurança (SOC / Pentesting / AppSec)** e **Administração de Redes & Sistemas**.
 
 <br/>
 
 <table align="center" width="100%">
   <tr>
     <td width="33%" align="center">
-      <b>🎯 Objetivo Profissional</b><br/>
-      Desenvolvimento Web / Cibersegurança
+      <b>🎯 Foco de Carreira</b><br/>
+      Cibersegurança &bull; AppSec &bull; SysAdmin
     </td>
     <td width="33%" align="center">
       <b>💼 Última Experiência</b><br/>
-      Pictonio (Dev Drupal & Projetos)
+      Pictonio (Web & Infraestrutura)
     </td>
     <td width="33%" align="center">
-      <b>🎓 Destaque Acadêmico</b><br/>
-      Prêmio de Melhor Aluno (GPSI)
+      <b>🏆 Reconhecimento</b><br/>
+      Melhor Aluno da Escola (GPSI - EPA)
     </td>
   </tr>
 </table>
 
 ---
 
-## 🛠️ Stack & Ferramentas
+## 🛠️ Stack & Ferramentas Técnicas
 
 <div align="center">
-  <p><i>Tecnologias e ambientes técnicos de atuação:</i></p>
-  <img src="https://skillicons.dev/icons?i=html,css,js,py,linux,kali,bash&theme=dark" alt="Minha Stack e Ferramentas" />
+  <img src="https://skillicons.dev/icons?i=kali,linux,bash,py,php,js,html,css,mysql,nginx,ubuntu&theme=dark" alt="Stack e Ferramentas" />
 </div>
 
 <br/>
@@ -65,54 +72,109 @@ Atualmente estou **à procura de novos desafios e oportunidades de emprego**, fo
 <table align="center" width="100%">
   <thead>
     <tr>
-      <th align="left">Domínio Técnico</th>
-      <th align="left">Tecnologias & Ferramentas Comprovadas</th>
+      <th align="left">Domínio</th>
+      <th align="left">Ferramentas & Tecnologias Comprovadas</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td><b>🌐 Desenvolvimento Web & CMS</b></td>
-      <td><code>Drupal</code> &bull; <code>Módulo Webform</code> &bull; <code>Canvas UI</code> &bull; <code>HTML5</code> &bull; <code>CSS3</code> &bull; <code>JavaScript</code></td>
-    </tr>
-    <tr>
       <td><b>🛡️ Cibersegurança & Pentest</b></td>
-      <td><code>Kali Linux</code> &bull; <code>Burp Suite</code> &bull; <code>OWASP ZAP</code> &bull; <code>OWASP Top 10</code> &bull; <code>Hardening</code></td>
+      <td><code>Kali Linux</code> &bull; <code>Burp Suite</code> &bull; <code>OWASP ZAP</code> &bull; <code>Metasploit</code> &bull; <code>Nmap</code> &bull; <code>SQLmap</code> &bull; <code>Wireshark</code> &bull; <code>OWASP Top 10</code> &bull; <code>Hardening</code></td>
     </tr>
     <tr>
-      <td><b>⚙️ Scripting & Automação</b></td>
-      <td><code>Python</code> (automação/scans de segurança) &bull; <code>Bash</code> &bull; <code>JavaScript</code></td>
+      <td><b>⚙️ Automação & Scripting</b></td>
+      <td><code>Python</code> (desenvolvimento de scanners de vulnerabilidades) &bull; <code>Bash / Shell Script</code> &bull; <code>JavaScript</code> &bull; <code>PHP</code></td>
     </tr>
     <tr>
-      <td><b>🖥️ Redes & Infraestrutura</b></td>
-      <td><code>Administração de Redes</code> &bull; <code>Sistemas Operativos (Linux/Windows)</code> &bull; <code>Protocolos OSI / TCP-IP</code></td>
+      <td><b>🖥️ Servidores & Infraestrutura</b></td>
+      <td><code>Linux (Ubuntu, CentOS)</code> &bull; <code>Servidores Apache & Nginx</code> &bull; <code>Ambientes LAMP</code> &bull; <code>MySQL</code> &bull; <code>PostgreSQL</code> &bull; <code>Windows Server</code></td>
+    </tr>
+    <tr>
+      <td><b>🌐 Redes & Arquitetura Web</b></td>
+      <td><code>Administração de Redes</code> &bull; <code>Protocolos TCP/IP & Modelo OSI</code> &bull; <code>Headers de Segurança (CSP, HSTS, CORS)</code> &bull; <code>Fundamentos Cisco</code></td>
     </tr>
   </tbody>
 </table>
 
 ---
 
-## 🚀 Projetos em Destaque
+## 🚀 Projetos & Trabalhos Práticos
 
 <table align="center" width="100%">
   <tr>
     <td width="50%" valign="top">
-      <h3>🏛️ Luka I</h3>
-      <p><b>Escopo:</b> Sistema personalizado de gestão e agendamento de recursos institucionais, concebido para estruturar pedidos de reserva, evitar sobreposição de horários e otimizar a visualização de ativos partilhados.</p>
-      <p><b>Stack:</b> <code>Drupal</code> &bull; <code>Webform</code> &bull; <code>Canvas UI</code></p>
-      <p><b>Métricas / Impacto:</b> <code>[preencher]</code></p>
+      <h3>🔍 Web Vulnerability Scanner (Python)</h3>
+      <p><b>Escopo:</b> Script automatizado desenvolvido em Python para varredura e detecção de falhas comuns em aplicações web (injeção SQL, XSS, validação de tokens CSRF e cabeçalhos de segurança essenciais como CSP e HSTS), com geração de relatórios de vulnerabilidades em HTML.</p>
+      <p><b>Tecnologias:</b> <code>Python</code> &bull; <code>Requests</code> &bull; <code>BeautifulSoup</code> &bull; <code>Regex</code></p>
+      <p><b>Ver Projeto:</b> <a href="https://me.pedronmira.pt/apppython" target="_blank">Detalhes do Scanner</a></p>
     </td>
     <td width="50%" valign="top">
-      <h3>💡 Apps for Good</h3>
-      <p><b>Escopo:</b> Projeto de desenvolvimento tecnológico e inovação concebido e liderado em equipa para resolução de desafios práticos, alcançando a distinção de finalista nacional na competição Apps for Good.</p>
-      <p><b>Stack:</b> <code>[preencher]</code></p>
-      <p><b>Métricas / Impacto:</b> Equipa Finalista Nacional &bull; <code>[preencher]</code></p>
+      <h3>🛡️ Relatório de Pentest & Avaliação de Riscos</h3>
+      <p><b>Escopo:</b> Avaliação de segurança em ambiente web e infraestrutura com metodologia de reconhecimento, varredura de portas, identificação de CVEs críticos em servidores Apache, validação de explorações e elaboração de plano de ação corretivo.</p>
+      <p><b>Tecnologias:</b> <code>Kali Linux</code> &bull; <code>Metasploit</code> &bull; <code>Burp Suite</code> &bull; <code>OWASP ZAP</code> &bull; <code>Nmap</code></p>
+      <p><b>Ver Projeto:</b> <a href="https://me.pedronmira.pt/pentest" target="_blank">Detalhes do Relatório</a></p>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <h3>🤖 DocSupport (Apps for Good)</h3>
+      <p><b>Escopo:</b> Robô inteligente de triagem hospitalar concebido em equipa para agilizar o atendimento e a gestão de dados em ambientes clínicos, selecionado como projeto finalista nacional na competição Apps for Good.</p>
+      <p><b>Destaque:</b> Finalista Nacional na Competição Tecnológica</p>
+      <p><b>Status:</b> Projeto em Equipe / Finalista Nacional</p>
+    </td>
+    <td width="50%" valign="top">
+      <h3>🏛️ Luka I (Pictonio)</h3>
+      <p><b>Escopo:</b> Sistema institucional de gestão e agendamento de recursos partilhados, concebido com validação estruturada de formulários, fluxos de reserva e interface de navegação intuitiva.</p>
+      <p><b>Tecnologias:</b> <code>CMS</code> &bull; <code>Webform</code> &bull; <code>Canvas UI</code> &bull; <code>Ambiente LAMP</code></p>
+      <p><b>Métricas / Resultados:</b> <code>[preencher]</code></p>
     </td>
   </tr>
 </table>
 
 ---
 
-## 📊 Atividade & Métricas de Desenvolvimento
+## 📜 Certificações & Qualificações
+
+<table align="center" width="100%">
+  <thead>
+    <tr>
+      <th align="left">Certificação / Curso</th>
+      <th align="left">Instituição Emissora</th>
+      <th align="left">Foco Técnico</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><b>Introduction to Cybersecurity</b></td>
+      <td>Cisco Networking Academy</td>
+      <td>Fundamentos de segurança digital, defesa de redes e prevenção de ameaças cibernéticas</td>
+    </tr>
+    <tr>
+      <td><b>Professional Diploma in Software Testing & QA</b></td>
+      <td>MTF Institute of Management & Technology</td>
+      <td>Metodologias de testes manuais, testes de segurança, garantia de qualidade e SQA</td>
+    </tr>
+    <tr>
+      <td><b>Fundamentos de Redes de Computadores</b></td>
+      <td>Cursa</td>
+      <td>Arquitetura de redes, modelos OSI e TCP/IP, protocolos de comunicação e cabeamento</td>
+    </tr>
+    <tr>
+      <td><b>Python para Automação em Cibersegurança</b></td>
+      <td>DevMedia</td>
+      <td>Desenvolvimento de scripts para varreduras de rede, manipulação de dados e análise de falhas</td>
+    </tr>
+    <tr>
+      <td><b>Front-end Web & Usabilidade</b></td>
+      <td>DevMedia / Udemy</td>
+      <td>Construção de aplicações web responsivas, estruturação semântica em HTML5, CSS3 e JavaScript</td>
+    </tr>
+  </tbody>
+</table>
+
+---
+
+## 📊 Atividade & Métricas de Desenvolvimento no GitHub
 
 <div align="center">
   <table align="center" border="0" cellspacing="0" cellpadding="0">
@@ -145,7 +207,7 @@ Atualmente estou **à procura de novos desafios e oportunidades de emprego**, fo
 ## 📬 Contato para Recrutadores & Oportunidades
 
 <div align="center">
-  <p><b>Interessado no meu perfil para sua equipe? Entre em contato diretamente:</b></p>
+  <p><b>Interessado em conversar sobre vagas ou projetos em Cibersegurança / Infraestrutura?</b></p>
 
   <a href="https://www.linkedin.com/in/pedronmira" target="_blank">
     <img src="https://img.shields.io/badge/LinkedIn-Pedro%20Mira-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" />
